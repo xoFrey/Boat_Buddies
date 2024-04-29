@@ -1,17 +1,19 @@
 import { useContext } from "react";
 import BoatCard from "../components/BoatCard";
+import BoatsForm from "../components/BoatsForm";
 import { AllBoats } from "../Context/Context";
+import { Button } from "../components/Button";
 
 const Boats = () => {
   const { allBoats } = useContext(AllBoats);
 
-  return <section className="flex flex-col items-center">
-    <div className="flex gap-2 justify-center">
-      <button>All Boats</button>
-      <button>All Reservations</button>
-      <button>All Available</button>
+  return <section className="flex flex-col items-center pt-4">
+    <div className="flex gap-2 justify-center mb-10">
+      <Button text={"All Boats"} />
+      <Button text={"Available Boats"} />
+      <Button text={"All reserved Boats"} />
     </div>
-    <article className="grid sm:grid-cols-3 grid-cols-1 gap-4 px-5 ">
+    <article className="grid sm:grid-cols-3 grid-cols-1 gap-4 px-5 mb-12 ">
       {allBoats.map((boat) => (
         <div key={boat._id} >
           <BoatCard boat={boat} />
@@ -19,7 +21,8 @@ const Boats = () => {
       ))}
 
     </article>
-    <button className="border rounded-xl p-2 shadow-md cursor-pointer">Add New Boat</button>
+    <Button text={"Add new Boat"} />
+    <BoatsForm />
   </section>;
 };
 

@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const boatsSchema = new mongoose.Schema(
   {
@@ -6,14 +6,24 @@ const boatsSchema = new mongoose.Schema(
     boatsType: {
       type: String,
       required: true,
-      enum: ["Tretboot", "Segelboot", "Kuftkissenboot", "Geisterschiff", "Containerschiff"]
+      enum: [
+        "Tretboot",
+        "Segelboot",
+        "Luftkissenboot",
+        "Geisterschiff",
+        "Containerschiff",
+      ],
     },
     baujahr: { type: Number, required: true },
-    seriennummer: { type: Number, required: true },
-    material: { type: String, required: true, enum: ["GFK", "Holz", "Metall", "Pappe", "Seelen"] },
-    imgUrl: { type: String, required: true, trim: true }
+    seriennummer: { type: Number, required: true, unique: true },
+    material: {
+      type: String,
+      required: true,
+      enum: ["GFK", "Holz", "Metall", "Pappe", "Seelen"],
+    },
+    imgUrl: { type: String, required: true, trim: true },
   },
-  { collection: "boats" }
-)
+  { collection: "boats" },
+);
 
-export const Boats = mongoose.model("Boats", boatsSchema)
+export const Boats = mongoose.model("Boats", boatsSchema);
