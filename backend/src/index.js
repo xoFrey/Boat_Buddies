@@ -4,6 +4,7 @@ import express from "express"
 import morgan from "morgan"
 import multer from "multer"
 import cors from "cors"
+import { connectToDatabase } from "./models/connectDb.js"
 
 config()
 
@@ -15,5 +16,12 @@ app.use(morgan("dev"))
 app.use(express.json())
 app.use(express.static("uploads"))
 
-const PORT = process.env.PORT
-app.listen(PORT, () => console.log("Server runs on port:", PORT))
+connectToDatabase()
+  .then(() => {
+    const PORT = process.env.PORT
+    app.listen(PORT, () => console.log("Server runs on port:", PORT))
+  })
+  .catch((err) => {
+    console.log(err)
+    process.exit()
+  })
