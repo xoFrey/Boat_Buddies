@@ -35,10 +35,11 @@ app.get("/api/v1/boats/:boatsId", (req, res) => {
     ) // ! why second not spread?
     .catch((err) => {
       console.log(err);
-      res.status(500).json((err, { message: "Could not get all Boat! " }));
+      res.status(500).json((err, { message: "Could not get one Boat! " }));
     });
 });
 
+// ! Nur einmal posten!
 app.post("/api/v1/boats", (req, res) => {
   const newBoat = {
     name: req.body.name,
@@ -56,6 +57,7 @@ app.post("/api/v1/boats", (req, res) => {
     });
 });
 
+// ! Nur einmal posten!
 app.post("/api/v1/reservations/:boatsId", (req, res) => {
   const newReservation = {
     name: req.body.name,
@@ -70,7 +72,9 @@ app.post("/api/v1/reservations/:boatsId", (req, res) => {
     .then((newRes) => res.json(newRes || {}))
     .catch((err) => {
       console.log(err);
-      res.status(500).json((err, { message: "Could not add new Boat! " }));
+      res
+        .status(500)
+        .json((err, { message: "Could not add new Reservation! " }));
     });
 });
 
@@ -80,7 +84,59 @@ app.delete("/api/v1/boats/:boatsId", (req, res) => {
     .then((deleted) => res.json(deleted || {}))
     .catch((err) => {
       console.log(err);
-      res.status(500).json((err, { message: "Could not add new Boat! " }));
+      res.status(500).json((err, { message: "Could not delete Boat! " }));
+    });
+});
+
+app.delete("/api/v1/reservations/:boatsId", (req, res) => {
+  const boatsId = req.params.boatsId;
+  Reservations.findByIdAndDelete(boatsId)
+    .then((deleted) => res.json(deleted || {}))
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .json((err, { message: "Could not delete reservation! " }));
+    });
+});
+
+app.patch("/api/v1/boats/:boatsId", (req, res) => {
+  const boatsId = req.params.boatsId;
+  const updateInfo = {
+    name: req.body.name,
+    boatsType: req.body.boatsType,
+    baujahr: req.body.baujahr,
+    seriennummer: req.body.seriennummer,
+    material: req.body.material,
+    imgUrl: req.body.imgUrl,
+  };
+
+  Boats.findByIdAndUpdate(boatsId, updateInfo, { new: true })
+    .then((updated) => res.json(updated || {}))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json((err, { message: "Could not update Boat! " }));
+    });
+});
+
+app.patch("/api/v1/reservations/:boatsId", (req, res) => {
+  const boatsId = req.params.boatsId;
+  const updateInfo = {
+    name: req.body.name,
+    phone: req.body.phone,
+    email: req.body.email,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    boatsId: req.params.boatsId,
+  };
+
+  Reservations.findOneAndUpdate({ boatsId }, updateInfo, { new: true })
+    .then((updated) => res.json(updated || {}))
+    .catch((err) => {
+      console.log(err);
+      res
+        .status(500)
+        .json((err, { message: "Could not update Reservations! " }));
     });
 });
 
