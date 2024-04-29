@@ -18,6 +18,11 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.static("uploads"));
 
+const upload = multer({ dest: "./uploads" });
+app.post("/api/v1/files/upload", upload.single("pictures"), (req, res) => {
+  res.json({ imgUrl: req.file.filename });
+});
+
 app.get("/api/v1/boats", (req, res) => {
   Boats.find()
     .then((allBoats) => res.json(allBoats || {}))
