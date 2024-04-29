@@ -4,8 +4,10 @@ import BoatsForm from "../components/BoatsForm";
 import { AllBoats } from "../Context/Context";
 import { Button } from "../components/Button";
 
-const Boats = () => {
+const Boats = ({ setRender }) => {
   const { allBoats } = useContext(AllBoats);
+
+
 
   return <section className="flex flex-col items-center pt-4">
     <div className="flex gap-2 justify-center mb-10">
@@ -14,15 +16,15 @@ const Boats = () => {
       <Button text={"All reserved Boats"} />
     </div>
     <article className="grid sm:grid-cols-3 grid-cols-1 gap-4 px-5 mb-12 ">
-      {allBoats.map((boat) => (
+      {allBoats ? allBoats.map((boat) => (
         <div key={boat._id} >
           <BoatCard boat={boat} />
         </div>
-      ))}
+      )) : <p>Loading...</p>}
 
     </article>
-    <Button text={"Add new Boat"} />
-    <BoatsForm />
+
+    <BoatsForm setRender={setRender} />
   </section>;
 };
 

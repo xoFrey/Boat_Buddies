@@ -21,7 +21,7 @@ const boatsSchema = new mongoose.Schema(
       required: true,
       enum: ["GFK", "Holz", "Metall", "Pappe", "Seelen"],
     },
-    imgUrl: { type: String, required: true, trim: true },
+    imgUrl: { type: String, required: false, trim: true },
   },
   { collection: "boats" },
 );
