@@ -32,6 +32,17 @@ app.get("/api/v1/boats", (req, res) => {
     });
 });
 
+// app.get("/api/v1/boats", (req, res) => {
+//   Promise.all([Boats.find(), Reservations.find()])
+//     .then(([foundBoats, foundRes]) =>
+//       foundRes.map((contact) => foundBoats.find({ _id:{$in:  contact.boatsId} })),
+//     )
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).json((err, { message: "Could not get all Boat! " }));
+//     });
+// });
+
 app.get("/api/v1/boats/:boatsId", (req, res) => {
   const boatsId = req.params.boatsId;
   Promise.all([Boats.findById(boatsId), Reservations.find({ boatsId })])
@@ -43,6 +54,34 @@ app.get("/api/v1/boats/:boatsId", (req, res) => {
       res.status(500).json((err, { message: "Could not get one Boat! " }));
     });
 });
+
+// const findAllFavorited = () => {
+//   return getDb()
+//     .then((db) => db.collection("favorites").find().toArray()) // [{ _id: favid , movieID: movieID}]
+//     .then((favoritesDocs) => favoritesDocs.map((item) => item.movieID)) // [ObjectId,...]
+//     .then((favIds) => Promise.all([getDb(), favIds]))
+//     .then(([db, favIds]) =>
+//       db
+//         .collection("movieDetails")
+//         .find({ _id: { $in: favIds } })
+//         .toArray(),
+//     );
+// };
+
+// app.get("/api/v1/reservations", (req, res) => {
+//   Reservations.find()
+//     .then((foundRes) => foundRes.map((resBoat) => resBoat.boatsId))
+//     .then((boatIDs) => Promise.all([Boats.find(), boatIDs]))
+//     .then(([allBoats, boatIDs]) =>
+//       allBoats.find({ _id: { $in: boatIDs } }).toArray(),
+//     )
+//     .catch((err) => {
+//       console.log(err);
+//       res
+//         .status(500)
+//         .json((err, { message: "Could not get reservated Boats! " }));
+//     });
+// });
 
 // ! Nur einmal posten!
 app.post("/api/v1/boats", (req, res) => {
