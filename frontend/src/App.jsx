@@ -30,11 +30,13 @@ const App = () => {
       <AllReservations.Provider value={{ allReservations, setAllReservations }}>
         <BrowserRouter>
           <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/boats" element={<Boats />} />
-            <Route path="/details/:boatsId" element={<Details />} />
-          </Routes>
+          <div className="ml-[100px]">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/boats" element={<Boats />} />
+              <Route path="/details/:boatsId" element={<Details />} />
+            </Routes>
+          </div>
         </BrowserRouter>
       </AllReservations.Provider>
     </AllBoats.Provider>
