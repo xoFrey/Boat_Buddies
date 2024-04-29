@@ -5,7 +5,7 @@ import { AllBoats } from "../Context/Context";
 const Boats = () => {
   const { allBoats } = useContext(AllBoats);
 
-  return <section>
+  return <section className="flex flex-col items-center">
     <div className="flex gap-2 justify-center">
       <button>All Boats</button>
       <button>All Reservations</button>
