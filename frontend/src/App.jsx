@@ -6,8 +6,6 @@ import Navigation from "./components/Navigation";
 import { AllBoats, AllReservations } from "./Context/Context";
 import { useEffect, useState } from "react";
 import { backendUrl } from "./Api/api.js";
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const App = () => {
   const [allBoats, setAllBoats] = useState([]);
@@ -28,22 +26,20 @@ const App = () => {
   }, []);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <AllBoats.Provider value={{ allBoats, setAllBoats }}>
-        <AllReservations.Provider value={{ allReservations, setAllReservations }}>
-          <BrowserRouter>
-            <Navigation />
-            <div className="ml-[100px]">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/boats" element={<Boats />} />
-                <Route path="/details/:boatsId" element={<Details />} />
-              </Routes>
-            </div>
-          </BrowserRouter>
-        </AllReservations.Provider>
-      </AllBoats.Provider>
-    </LocalizationProvider>
+    <AllBoats.Provider value={{ allBoats, setAllBoats }}>
+      <AllReservations.Provider value={{ allReservations, setAllReservations }}>
+        <BrowserRouter>
+          <Navigation />
+          <div className="ml-[100px]">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/boats" element={<Boats />} />
+              <Route path="/details/:boatsId" element={<Details />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </AllReservations.Provider>
+    </AllBoats.Provider>
   );
 };
 
