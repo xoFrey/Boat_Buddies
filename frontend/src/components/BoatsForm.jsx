@@ -11,9 +11,14 @@ const BoatsForm = () => {
   const [seriennummer, setSeriennummer] = useState(0);
   const [materialien, setMaterialien] = useState();
   const [boottypen, setBoottypen] = useState();
+  const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState(false);
 
   const addBoat = (e) => {
     e.preventDefault();
+
+    if (name.length === 0 || baujahr === 0 || seriennummer === 0) return setError(true);
+
     const newBoat = {
       name: name,
       boatsType: boottypen,
@@ -29,15 +34,22 @@ const BoatsForm = () => {
         body: JSON.stringify(newBoat)
       })
       .then((res) => res.json())
-      .then((data) => setAllBoats([...allBoats, data]))
+      .then((data) => { setAllBoats([...allBoats, data]); })
       .catch((err) => console.log(err));
+
+    setName("");
+    setBaujahr(0);
+    setSeriennummer(0);
+    setError(false);
   };
 
-  console.log(allBoats);
+
+
+  console.log(showForm);
 
   return <section className="mt-10">
-    <Button text={"Add new Boat"} addBoat={addBoat} />
-    <form className="flex flex-col gap-5 mb-20 mt-10">
+    <Button text={"Add new Boat"} setShowForm={setShowForm} showForm={showForm} />
+    <form onSubmit={addBoat} className={`flex flex-col gap-5 mb-20 mt-10 ${showForm ? "visible" : "hidden"}`}>
       <div className="relative">
         <label
           htmlFor="name"
@@ -127,6 +139,15 @@ const BoatsForm = () => {
           <option>Geisterschiff</option>
           <option>Containerschiff</option>
         </select>
+
+        <h3 className={`text-red-500 ${error ? "visible" : "hidden"}`}>Bitte etwas eintragen!</h3>
+
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Submit
+        </button>
       </div>
 
 
