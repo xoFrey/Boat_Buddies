@@ -1,29 +1,29 @@
-import { useContext, useEffect, useState } from "react"
-import BoatCard from "../components/BoatCard"
-import BoatsForm from "../components/BoatsForm"
-import { AllBoats } from "../Context/Context"
-import { Button } from "../components/Button"
-import { backendUrl } from "../Api/api"
+import { useContext, useEffect, useState } from "react";
+import BoatCard from "../components/BoatCard";
+import BoatsForm from "../components/BoatsForm";
+import { AllBoats, FilterBoats } from "../Context/Context";
+import { Button } from "../components/Button";
+import { backendUrl } from "../Api/api";
 
 const Boats = ({ setRender }) => {
-  const { allBoats } = useContext(AllBoats)
-  const [filter, setFilter] = useState("allBoats")
-  const [availBoats, setAvailBoats] = useState([])
-  const [reservedBoats, setReservedBoats] = useState([])
+  const { allBoats } = useContext(AllBoats);
+  const { filter, setFilter } = useContext(FilterBoats);
+  const [availBoats, setAvailBoats] = useState([]);
+  const [reservedBoats, setReservedBoats] = useState([]);
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/available`)
       .then((res) => res.json())
       .then((data) => setAvailBoats(data))
-      .catch((err) => console.log(err))
-  }, [])
+      .catch((err) => console.log(err));
+  }, []);
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/reserved`)
       .then((res) => res.json())
       .then((data) => setReservedBoats(data))
-      .catch((err) => console.log(err))
-  }, [])
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <section className="flex flex-col items-center pt-4">
@@ -74,7 +74,7 @@ const Boats = ({ setRender }) => {
 
       <BoatsForm setRender={setRender} />
     </section>
-  )
-}
+  );
+};
 
-export default Boats
+export default Boats;
