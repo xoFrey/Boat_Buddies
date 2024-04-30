@@ -1,81 +1,86 @@
-import { useContext, useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
-import { backendUrl } from "../Api/api.js"
-import ResForm from "../components/ResForm.jsx"
-import { TiDeleteOutline } from "react-icons/ti"
-import { AllBoats } from "../Context/Context.jsx"
-import { FaEdit } from "react-icons/fa"
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { backendUrl } from "../Api/api.js";
+import ResForm from "../components/ResForm.jsx";
+import { TiDeleteOutline } from "react-icons/ti";
+import { AllBoats } from "../Context/Context.jsx";
+import { FaEdit } from "react-icons/fa";
 
 const Details = () => {
-  const { allBoats, setAllBoats } = useContext(AllBoats)
-  const { boatsId } = useParams()
-  const [boatsData, setBoatsData] = useState([])
-  const [newRes, setNewRes] = useState()
+  const { allBoats, setAllBoats } = useContext(AllBoats);
+  const { boatsId } = useParams();
+  const [boatsData, setBoatsData] = useState([]);
+  const [newRes, setNewRes] = useState();
 
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [username, setUsername] = useState("")
-  const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [toggleUpdate, setToggleUpdate] = useState(false)
-  const [toggleForm, setToggleForm] = useState(false)
+  const [toggleUpdate, setToggleUpdate] = useState(false);
+  const [toggleForm, setToggleForm] = useState(false);
 
-  const [name, setName] = useState("")
-  const [baujahr, setBaujahr] = useState(0)
-  const [seriennummer, setSeriennummer] = useState(0)
-  const [materialien, setMaterialien] = useState("")
-  const [boottypen, setBoottypen] = useState("")
-  const [error, setError] = useState(false)
-  const [file, setFile] = useState()
+  const [name, setName] = useState("");
+  const [baujahr, setBaujahr] = useState(0);
+  const [seriennummer, setSeriennummer] = useState(0);
+  const [materialien, setMaterialien] = useState("");
+  const [boottypen, setBoottypen] = useState("");
+  const [error, setError] = useState(false);
+  const [file, setFile] = useState();
+
+  const [resId, setResId] = useState("");
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`)
       .then((res) => res.json())
       .then((data) => setBoatsData(data))
-      .catch((err) => console.log(err))
-  }, [newRes])
+      .catch((err) => console.log(err));
+  }, [newRes]);
 
   const deleteBoat = () => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setAllBoats(allBoats.filter((item) => data._id !== item._id)))
       .then(() => fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" }))
-      .catch((err) => console.log(err))
-  }
+      .catch((err) => console.log(err));
+  };
 
   const deleteReservation = () => {
     fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err))
-  }
+      .catch((err) => console.log(err));
+  };
 
-  const handleResEdit = (boatsId) => {
-    const reservation = boatsData.reservations.filter((item) => item._id === boatsId)
-    setUsername(reservation[0].name)
-    setPhone(reservation[0].phone)
-    setEmail(reservation[0].email)
-    setStartDate(reservation[0].startDate.slice(0, 10))
-    setEndDate(reservation[0].endDate.slice(0, 10))
+  const handleResEdit = (itemId) => {
+    const reservation = boatsData.reservations.filter((item) => item._id === itemId);
+    setUsername(reservation[0].name);
+    setPhone(reservation[0].phone);
+    setEmail(reservation[0].email);
+    setStartDate(reservation[0].startDate.slice(0, 10));
+    setEndDate(reservation[0].endDate.slice(0, 10));
+    setResId(itemId);
 
-    setToggleUpdate(true)
-  }
+    setToggleUpdate(true);
+  };
+
+  console.log(resId);
 
   const handleBoatEdit = () => {
-    setToggleForm(true)
-    setName(boatsData.name)
-    setSeriennummer(boatsData.seriennummer)
-    setBoottypen(boatsData.boatsType)
-    setMaterialien(boatsData.material)
-    setBaujahr(boatsData.baujahr)
-  }
+    setToggleForm(true);
+    setName(boatsData.name);
+    setSeriennummer(boatsData.seriennummer);
+    setBoottypen(boatsData.boatsType);
+    setMaterialien(boatsData.material);
+    setBaujahr(boatsData.baujahr);
+  };
 
   const editBoat = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append("pictures", file)
+    const formData = new FormData();
+    formData.append("pictures", file);
     fetch(`${backendUrl}/api/v1/files/upload`, { method: "POST", body: formData })
       .then((res) => res.json())
       .then((data) => {
@@ -86,8 +91,8 @@ const Details = () => {
           seriennummer: seriennummer,
           material: materialien,
           imgUrl: data.imgUrl
-        }
-        return updateBoat
+        };
+        return updateBoat;
       })
       .then((updateBoat) =>
         fetch(`${backendUrl}/api/v1/boats/${boatsId}`, {
@@ -98,9 +103,9 @@ const Details = () => {
       )
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err))
-    setToggleForm(false)
-  }
+      .catch((err) => console.log(err));
+    setToggleForm(false);
+  };
 
   return (
     <main className="min-h-screen bg-lightblue flex items-center pb-20 flex-col">
@@ -154,7 +159,7 @@ const Details = () => {
                   />
                 </div>
               </div>
-            )
+            );
           })}
       </section>
       <section>
@@ -291,11 +296,12 @@ const Details = () => {
             setEmail={setEmail}
             toggleUpdate={toggleUpdate}
             setToggleUpdate={setToggleUpdate}
+            resId={resId}
           />
         )}
       </section>
     </main>
-  )
-}
+  );
+};
 
-export default Details
+export default Details;

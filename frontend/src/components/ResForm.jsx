@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { useParams } from "react-router-dom"
-import { backendUrl } from "../Api/api"
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { backendUrl } from "../Api/api";
 
 const ResForm = ({
   setNewRes,
@@ -15,13 +15,14 @@ const ResForm = ({
   email,
   setEmail,
   toggleUpdate,
-  setToggleUpdate
+  setToggleUpdate,
+  resId
 }) => {
-  const { boatsId } = useParams()
-  const [error, setError] = useState(false)
+  const { boatsId } = useParams();
+  const [error, setError] = useState(false);
 
   const addReservation = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (
       username.length === 0 ||
       phone.length === 0 ||
@@ -29,7 +30,7 @@ const ResForm = ({
       startDate.length === 0 ||
       endDate.length === 0
     )
-      return setError(true)
+      return setError(true);
 
     const newReservation = {
       name: username,
@@ -38,7 +39,7 @@ const ResForm = ({
       startDate: startDate,
       endDate: endDate,
       boatsId: boatsId
-    }
+    };
 
     fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, {
       method: "POST",
@@ -47,18 +48,18 @@ const ResForm = ({
     })
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(err));
 
-    setUsername("")
-    setPhone("")
-    setEmail("")
-    setStartDate("")
-    setEndDate("")
-    setError(false)
-  }
+    setUsername("");
+    setPhone("");
+    setEmail("");
+    setStartDate("");
+    setEndDate("");
+    setError(false);
+  };
 
   const updateReservation = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (
       username.length === 0 ||
@@ -67,7 +68,7 @@ const ResForm = ({
       startDate.length === 0 ||
       endDate.length === 0
     )
-      return setError(true)
+      return setError(true);
 
     const updatedData = {
       name: username,
@@ -76,25 +77,25 @@ const ResForm = ({
       startDate: startDate,
       endDate: endDate,
       boatsId: boatsId
-    }
+    };
 
-    fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, {
+    fetch(`${backendUrl}/api/v1/reservations/${boatsId}/${resId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedData)
     })
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err))
+      .catch((err) => console.log(err));
 
-    setToggleUpdate(false)
-    setUsername("")
-    setPhone("")
-    setEmail("")
-    setStartDate("")
-    setEndDate("")
-    setError(false)
-  }
+    setToggleUpdate(false);
+    setUsername("");
+    setPhone("");
+    setEmail("");
+    setStartDate("");
+    setEndDate("");
+    setError(false);
+  };
 
   return (
     <main className="flex flex-col items-center">
@@ -213,7 +214,7 @@ const ResForm = ({
         </form>
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default ResForm
+export default ResForm;
