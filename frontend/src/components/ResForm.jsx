@@ -20,8 +20,6 @@ const ResForm = ({
   const { boatsId } = useParams()
   const [error, setError] = useState(false)
 
-  console.log(username)
-
   const addReservation = (e) => {
     e.preventDefault()
     if (

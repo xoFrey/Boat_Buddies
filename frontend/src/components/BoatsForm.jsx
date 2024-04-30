@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { Button } from "./Button"
 import { backendUrl } from "../Api/api"
 import { AllBoats } from "../Context/Context"
