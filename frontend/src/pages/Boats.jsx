@@ -9,11 +9,18 @@ const Boats = ({ setRender }) => {
   const { allBoats } = useContext(AllBoats)
   const [filter, setFilter] = useState("allBoats")
   const [availBoats, setAvailBoats] = useState([])
+  const [reservedBoats, setReservedBoats] = useState([])
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/available`)
       .then((res) => res.json())
       .then((data) => setAvailBoats(data))
+  }, [])
+
+  useEffect(() => {
+    fetch(`${backendUrl}/api/v1/boats/reserved`)
+      .then((res) => res.json())
+      .then((data) => setReservedBoats(data))
   }, [])
 
   return (
@@ -40,6 +47,19 @@ const Boats = ({ setRender }) => {
         <article className="grid sm:grid-cols-3 grid-cols-1 gap-4 px-5 mb-12 ">
           {availBoats ? (
             availBoats.map((boat, index) => (
+              <div key={index}>
+                <BoatCard boat={boat} />
+              </div>
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
+        </article>
+      )}
+      {filter === "reservedBoats" && (
+        <article className="grid sm:grid-cols-3 grid-cols-1 gap-4 px-5 mb-12 ">
+          {reservedBoats ? (
+            reservedBoats.map((boat, index) => (
               <div key={index}>
                 <BoatCard boat={boat} />
               </div>
