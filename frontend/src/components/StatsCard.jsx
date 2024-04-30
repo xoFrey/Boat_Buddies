@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
-const StatsCard = ({ title, stats }) => {
+const StatsCard = ({ title, stats, setFilter }) => {
   return (
-    <Link to="/boats">
+    <Link to="/boats" onClick={setFilter}>
       <article className="flex flex-col gap-2 text-center  py-8 w-[200px] rounded-xl shadow-xl bg-purple hover:bg-lightpink duration-300">
         <p className="text-2xl">{title}</p>
         <p className="text-2xl font-bold">{stats}</p>
       </article>
     </Link>
-  )
-}
+  );
+};
 
-export default StatsCard
+export default StatsCard;
