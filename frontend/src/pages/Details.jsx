@@ -1,83 +1,81 @@
-import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { backendUrl } from "../Api/api.js";
-import ResForm from "../components/ResForm.jsx";
-import { TiDeleteOutline } from "react-icons/ti";
-import { AllBoats } from "../Context/Context.jsx";
-import { FaEdit } from "react-icons/fa";
+import { useContext, useEffect, useState } from "react"
+import { Link, useParams } from "react-router-dom"
+import { backendUrl } from "../Api/api.js"
+import ResForm from "../components/ResForm.jsx"
+import { TiDeleteOutline } from "react-icons/ti"
+import { AllBoats } from "../Context/Context.jsx"
+import { FaEdit } from "react-icons/fa"
 
 const Details = () => {
-  const { allBoats, setAllBoats } = useContext(AllBoats);
-  const { boatsId } = useParams();
-  const [boatsData, setBoatsData] = useState([]);
-  const [newRes, setNewRes] = useState();
+  const { allBoats, setAllBoats } = useContext(AllBoats)
+  const { boatsId } = useParams()
+  const [boatsData, setBoatsData] = useState([])
+  const [newRes, setNewRes] = useState()
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
+  const [username, setUsername] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
 
-  const [toggleUpdate, setToggleUpdate] = useState(false);
-  const [toggleForm, setToggleForm] = useState(false);
+  const [toggleUpdate, setToggleUpdate] = useState(false)
+  const [toggleForm, setToggleForm] = useState(false)
 
-  const [name, setName] = useState("");
-  const [baujahr, setBaujahr] = useState(0);
-  const [seriennummer, setSeriennummer] = useState(0);
-  const [materialien, setMaterialien] = useState("");
-  const [boottypen, setBoottypen] = useState("");
-  const [error, setError] = useState(false);
-  const [file, setFile] = useState();
-
+  const [name, setName] = useState("")
+  const [baujahr, setBaujahr] = useState(0)
+  const [seriennummer, setSeriennummer] = useState(0)
+  const [materialien, setMaterialien] = useState("")
+  const [boottypen, setBoottypen] = useState("")
+  const [error, setError] = useState(false)
+  const [file, setFile] = useState()
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`)
       .then((res) => res.json())
       .then((data) => setBoatsData(data))
-      .catch((err) => console.log(err));
-  }, [newRes]);
+      .catch((err) => console.log(err))
+  }, [newRes])
 
   const deleteBoat = () => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setAllBoats(allBoats.filter((item) => data._id !== item._id)))
       .then(() => fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" }))
-      .catch((err) => console.log(err));
-  };
+      .catch((err) => console.log(err))
+  }
 
   const deleteReservation = () => {
     fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err));
-  };
+      .catch((err) => console.log(err))
+  }
 
   const handleResEdit = (boatsId) => {
-    const reservation = boatsData.reservations.filter((item) => item._id === boatsId);
-    setUsername(reservation[0].name);
-    setPhone(reservation[0].phone);
-    setEmail(reservation[0].email);
-    setStartDate(reservation[0].startDate.slice(0, 10));
-    setEndDate(reservation[0].endDate.slice(0, 10));
+    const reservation = boatsData.reservations.filter((item) => item._id === boatsId)
+    setUsername(reservation[0].name)
+    setPhone(reservation[0].phone)
+    setEmail(reservation[0].email)
+    setStartDate(reservation[0].startDate.slice(0, 10))
+    setEndDate(reservation[0].endDate.slice(0, 10))
 
-    setToggleUpdate(true);
-  };
-
+    setToggleUpdate(true)
+  }
 
   const handleBoatEdit = () => {
-    setToggleForm(true);
-    setName(boatsData.name);
-    setSeriennummer(boatsData.seriennummer);
-    setBoottypen(boatsData.boatsType);
-    setMaterialien(boatsData.material);
-    setBaujahr(boatsData.baujahr);
-  };
+    setToggleForm(true)
+    setName(boatsData.name)
+    setSeriennummer(boatsData.seriennummer)
+    setBoottypen(boatsData.boatsType)
+    setMaterialien(boatsData.material)
+    setBaujahr(boatsData.baujahr)
+  }
 
   const editBoat = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const formData = new FormData();
-    formData.append("pictures", file);
+    const formData = new FormData()
+    formData.append("pictures", file)
     fetch(`${backendUrl}/api/v1/files/upload`, { method: "POST", body: formData })
       .then((res) => res.json())
       .then((data) => {
@@ -88,24 +86,24 @@ const Details = () => {
           seriennummer: seriennummer,
           material: materialien,
           imgUrl: data.imgUrl
-        };
-        return updateBoat;
+        }
+        return updateBoat
       })
       .then((updateBoat) =>
-        fetch(`${backendUrl}/api/v1/boats/${boatsId}`,
-          {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updateBoat)
-          }))
+        fetch(`${backendUrl}/api/v1/boats/${boatsId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updateBoat)
+        })
+      )
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err));
-    setToggleForm(false);
-  };
+      .catch((err) => console.log(err))
+    setToggleForm(false)
+  }
 
   return (
-    <>
+    <main>
       <section>
         <div className="mb-8 flex flex-col items-start">
           <h1 className="font-bold mb-4">Boats Details Page</h1>
@@ -150,7 +148,7 @@ const Details = () => {
                   />
                 </div>
               </div>
-            );
+            )
           })}
       </section>
       <section>
@@ -208,10 +206,11 @@ const Details = () => {
                 />
               </div>
               <div>
-                <label htmlFor="upload">
-                  Upload
-                </label>
-                <input type="file" name="upload" id="upload"
+                <label htmlFor="upload">Upload</label>
+                <input
+                  type="file"
+                  name="upload"
+                  id="upload"
                   onChange={(e) => setFile(e.target.files[0])}
                 />
               </div>
@@ -226,8 +225,7 @@ const Details = () => {
                   value={materialien}
                   id="materials"
                   name="materials"
-                  className=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                >
+                  className=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                   <option>GFK</option>
                   <option>Holz</option>
                   <option>Metall</option>
@@ -246,8 +244,7 @@ const Details = () => {
                   value={boottypen}
                   id="boattype"
                   name="boattype"
-                  className="mb-5 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                >
+                  className="mb-5 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                   <option>Tretboot</option>
                   <option>Segelboot</option>
                   <option>Luftkissenboot</option>
@@ -268,7 +265,8 @@ const Details = () => {
                     type="Exit"
                     className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                     Exit
-                  </button></div>
+                  </button>
+                </div>
               </div>
             </form>
           </section>
@@ -290,8 +288,8 @@ const Details = () => {
           />
         )}
       </section>
-    </>
-  );
-};
+    </main>
+  )
+}
 
-export default Details;
+export default Details
