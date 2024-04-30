@@ -1,25 +1,82 @@
-import { useParams } from "react-router-dom"
 
-const ResForm = () => {
-  const { boatsId } = useParams()
+import { DatePicker } from "@mui/x-date-pickers";
+import { useContext, useState } from "react";
+import { useParams } from "react-router-dom";
+import { backendUrl } from "../Api/api";
+import { Button } from "./Button";
+import { AllReservations } from "../Context/Context";
+
+const ResForm = ({ setNewRes }) => {
+  const { boatsId } = useParams();
+  const { allReservations, setAllReservations } = useContext(AllReservations);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState(false);
+
+  const addReservation = (e) => {
+    e.preventDefault();
+    if (username.length === 0 || phone.length === 0 || email.length === 0 || startDate.length === 0 || endDate.length === 0) return setError(true);
+
+    const newReservation = {
+      name: username,
+      phone: phone,
+      email: email,
+      startDate: startDate,
+      endDate: endDate,
+      boatsId: boatsId// # Date.now() Plus
+    };
+
+    fetch(`${backendUrl}/api/v1/reservations/${boatsId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newReservation)
+
+      })
+      .then((res) => res.json())
+      .then((data) => setNewRes(data))
+      .catch((err) => console.log(err));
+
+    setUsername("");
+    setPhone("");
+    setEmail("");
+    setStartDate("");
+    setEndDate("");
+    setError(false);
+
+  };
+
+
 
   return (
     <div className="px-8">
       <h2 className="font-bold">Reserve a nice and juicy boat</h2>
-      <form className="flex flex-col gap-2">
-        <input type="text" defaultValue={boatsId} />
-        <input type="text" name="username" id="username" />
-        <input type="text" name="phone" id="phone" />
-        <input type="email" name="email" id="email" />
+      <form onSubmit={addReservation} className="flex flex-col gap-2">
+        <input type="text" defaultValue={boatsId} disabled />
+        <input onChange={(e) => setUsername(e.target.value)} value={username} type="text" name="username" id="username" />
+        <input onChange={(e) => setPhone(e.target.value)} value={phone} type="text" name="phone" id="phone" />
+        <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" id="email" />
+        <div className="flex">
+          <input onChange={(e) => setStartDate(e.target.value)} value={startDate} type="date" name="start" id="start" />
+          <input onChange={(e) => setEndDate(e.target.value)} value={endDate} type="date" name="end" id="end" />
+        </div>
+        <h3 className={`text-red-500 ${error ? "visible" : "hidden"}`}>Bitte etwas eintragen!</h3>
+        <button
+          type="submit"
+          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          Submit
+        </button>
       </form>
+
+
+
     </div>
-  )
-}
+  );
+};
 
-export default ResForm
+export default ResForm;
 
-// name: { type: String, required: true, trim: true },
-// phone: { type: String, required: true, trim: true },
-// email: { type: String, required: true, trim: true },
-// startDate: { type: Date, required: true, default: Date.now(), trim: true },
-// endDate: { type: Date, required: true, trim: true }, // # Date.now() Plus
+

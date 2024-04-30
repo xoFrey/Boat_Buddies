@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
-import { backendUrl } from "../Api/api.js"
-import ResForm from "../components/ResForm.jsx"
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { backendUrl } from "../Api/api.js";
+import ResForm from "../components/ResForm.jsx";
 
 const Details = () => {
-  const [boatsData, setBoatsData] = useState([])
-  const { boatsId } = useParams()
+  const [boatsData, setBoatsData] = useState([]);
+  const { boatsId } = useParams();
+  const [newRes, setNewRes] = useState();
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`)
       .then((res) => res.json())
       .then((data) => setBoatsData(data))
-      .catch((err) => console.log(err))
-  }, [])
+      .catch((err) => console.log(err));
+  }, [newRes]);
+
 
   return (
     <>
@@ -36,14 +38,14 @@ const Details = () => {
                 <p>{item.startDate}</p>
                 <p>{item.endDate}</p>
               </div>
-            )
+            );
           })}
       </section>
       <section>
-        <ResForm />
+        <ResForm setNewRes={setNewRes} />
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Details
+export default Details;
