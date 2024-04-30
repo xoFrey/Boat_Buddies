@@ -1,47 +1,57 @@
-import { useContext, useState } from "react"
-import { Button } from "./Button"
-import { backendUrl } from "../Api/api"
-import { AllBoats } from "../Context/Context"
+import { useContext, useState } from "react";
+import { Button } from "./Button";
+import { backendUrl } from "../Api/api";
+import { AllBoats } from "../Context/Context";
 
 const BoatsForm = () => {
-  const { allBoats, setAllBoats } = useContext(AllBoats)
-  const [name, setName] = useState("")
-  const [baujahr, setBaujahr] = useState(0)
-  const [seriennummer, setSeriennummer] = useState(0)
-  const [materialien, setMaterialien] = useState()
-  const [boottypen, setBoottypen] = useState()
-  const [showForm, setShowForm] = useState(false)
-  const [error, setError] = useState(false)
+  const { allBoats, setAllBoats } = useContext(AllBoats);
+  const [name, setName] = useState("");
+  const [baujahr, setBaujahr] = useState(0);
+  const [seriennummer, setSeriennummer] = useState(0);
+  const [materialien, setMaterialien] = useState();
+  const [boottypen, setBoottypen] = useState();
+  const [showForm, setShowForm] = useState(false);
+  const [error, setError] = useState(false);
+  const [file, setFile] = useState();
 
   const addBoat = (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (name.length === 0 || baujahr === 0 || seriennummer === 0) return setError(true)
+    const formData = new FormData();
+    formData.append("pictures", file);
 
-    const newBoat = {
-      name: name,
-      boatsType: boottypen,
-      baujahr: baujahr,
-      seriennummer: seriennummer,
-      material: materialien
-      // imgUrl: { type: String, required: true, trim: true },
-    }
-    fetch(`${backendUrl}/api/v1/boats`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newBoat)
-    })
+    if (name.length === 0 || baujahr === 0 || seriennummer === 0) return setError(true);
+
+    fetch(`${backendUrl}/api/v1/files/upload`, { method: "POST", body: formData })
       .then((res) => res.json())
       .then((data) => {
-        setAllBoats([...allBoats, data])
-      })
-      .catch((err) => console.log(err))
+        const newBoat = {
+          name: name,
+          boatsType: boottypen,
+          baujahr: baujahr,
+          seriennummer: seriennummer,
+          material: materialien,
+          imgUrl: data.imgUrl,
+        };
+        return newBoat;
 
-    setName("")
-    setBaujahr(0)
-    setSeriennummer(0)
-    setError(false)
-  }
+      })
+      .then((newBoatData) => fetch(`${backendUrl}/api/v1/boats`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newBoatData)
+      }))
+      .then((res) => res.json())
+      .then((data) => {
+        setAllBoats([...allBoats, data]);
+      })
+      .catch((err) => console.log(err));
+
+    setName("");
+    setBaujahr(0);
+    setSeriennummer(0);
+    setError(false);
+  };
 
   return (
     <section className="mt-10">
@@ -98,6 +108,7 @@ const BoatsForm = () => {
             className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
+
         <div>
           <label htmlFor="materials" className="block text-sm font-medium leading-6 text-gray-900">
             Materials
@@ -115,6 +126,14 @@ const BoatsForm = () => {
             <option>Pappe</option>
             <option>Seelen</option>
           </select>
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="upload">
+            Upload
+          </label>
+          <input type="file" name="upload" id="upload"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
         </div>
         <div>
           <label htmlFor="boattype" className="block text-sm font-medium leading-6 text-gray-900">
@@ -144,7 +163,7 @@ const BoatsForm = () => {
         </div>
       </form>
     </section>
-  )
-}
+  );
+};
 
-export default BoatsForm
+export default BoatsForm;

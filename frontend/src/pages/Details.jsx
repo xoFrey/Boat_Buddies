@@ -5,12 +5,11 @@ import ResForm from "../components/ResForm.jsx";
 import { TiDeleteOutline } from "react-icons/ti";
 import { AllBoats } from "../Context/Context.jsx";
 import { FaEdit } from "react-icons/fa";
-import { Button } from "../components/Button.jsx";
 
 const Details = () => {
   const { allBoats, setAllBoats } = useContext(AllBoats);
-  const [boatsData, setBoatsData] = useState([]);
   const { boatsId } = useParams();
+  const [boatsData, setBoatsData] = useState([]);
   const [newRes, setNewRes] = useState();
 
   const [startDate, setStartDate] = useState("");
@@ -28,6 +27,7 @@ const Details = () => {
   const [materialien, setMaterialien] = useState("");
   const [boottypen, setBoottypen] = useState("");
   const [error, setError] = useState(false);
+  const [file, setFile] = useState();
 
 
   useEffect(() => {
@@ -75,34 +75,41 @@ const Details = () => {
 
   const editBoat = (e) => {
     e.preventDefault();
-    const updateBoat = {
-      name: name,
-      boatsType: boottypen,
-      baujahr: baujahr,
-      seriennummer: seriennummer,
-      material: materialien,
-      // imgUrl:,
-    };
 
-    fetch(`${backendUrl}/api/v1/boats/${boatsId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updateBoat)
+    const formData = new FormData();
+    formData.append("pictures", file);
+    fetch(`${backendUrl}/api/v1/files/upload`, { method: "POST", body: formData })
+      .then((res) => res.json())
+      .then((data) => {
+        const updateBoat = {
+          name: name,
+          boatsType: boottypen,
+          baujahr: baujahr,
+          seriennummer: seriennummer,
+          material: materialien,
+          imgUrl: data.imgUrl
+        };
+        return updateBoat;
       })
+      .then((updateBoat) =>
+        fetch(`${backendUrl}/api/v1/boats/${boatsId}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updateBoat)
+          }))
       .then((res) => res.json())
       .then((data) => setNewRes(data))
       .catch((err) => console.log(err));
     setToggleForm(false);
   };
 
-
-
   return (
     <>
       <section>
         <div className="mb-8 flex flex-col items-start">
           <h1 className="font-bold mb-4">Boats Details Page</h1>
+          <img src={`${backendUrl}/${boatsData.imgUrl}`} alt="" />
           <h2>{boatsData.name}</h2>
           <h2>SN: {boatsData.seriennummer}</h2>
           <h2>Baujahr: {boatsData.baujahr}</h2>
@@ -148,9 +155,9 @@ const Details = () => {
       </section>
       <section>
         {toggleForm ? (
-          <section className="mt-10">
-
-            <form onSubmit={editBoat} className={`flex flex-col gap-5 mb-20 mt-10 `}>
+          <section className="mt-10 px-8">
+            <h2 className="font-bold">Update your Boat</h2>
+            <form onSubmit={editBoat} className={`flex flex-col gap-5 mt-5`}>
               <div className="relative">
                 <label
                   htmlFor="name"
@@ -201,6 +208,14 @@ const Details = () => {
                 />
               </div>
               <div>
+                <label htmlFor="upload">
+                  Upload
+                </label>
+                <input type="file" name="upload" id="upload"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
+              </div>
+              <div>
                 <label
                   htmlFor="materials"
                   className="block text-sm font-medium leading-6 text-gray-900">
@@ -211,7 +226,7 @@ const Details = () => {
                   value={materialien}
                   id="materials"
                   name="materials"
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className=" block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 >
                   <option>GFK</option>
                   <option>Holz</option>
@@ -231,7 +246,7 @@ const Details = () => {
                   value={boottypen}
                   id="boattype"
                   name="boattype"
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="mb-5 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 >
                   <option>Tretboot</option>
                   <option>Segelboot</option>
@@ -243,12 +258,17 @@ const Details = () => {
                 <h3 className={`text-red-500 ${error ? "visible" : "hidden"}`}>
                   Bitte etwas eintragen!
                 </h3>
-
-                <button
-                  type="submit"
-                  className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  Submit
-                </button>
+                <div className="flex gap-3 mb-20">
+                  <button
+                    type="submit"
+                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    Submit
+                  </button>
+                  <button
+                    type="Exit"
+                    className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                    Exit
+                  </button></div>
               </div>
             </form>
           </section>
