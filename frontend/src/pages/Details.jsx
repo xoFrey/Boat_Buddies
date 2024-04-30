@@ -18,6 +18,8 @@ const Details = () => {
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
 
+  const [toggleUpdate, setToggleUpdate] = useState(false)
+
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`)
       .then((res) => res.json())
@@ -49,20 +51,7 @@ const Details = () => {
     setStartDate(reservation[0].startDate.slice(0, 10))
     setEndDate(reservation[0].endDate.slice(0, 10))
 
-    // console.log(boatsData)
-    // const updatedData = {
-    //   name: { type: String, required: true, trim: true },
-    //   phone: { type: String, required: true, trim: true },
-    //   email: { type: String, required: true, trim: true },
-    //   startDate: { type: Date, required: true, default: Date.now(), trim: true },
-    //   endDate: { type: Date, required: true, trim: true }, // # Date.now() Plus
-    //   boatsId: { type: mongoose.Types.ObjectId, ref: "Boats", required: true }
-    // }
-    // fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, {
-    //   method: "PATCH",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(updatedData)
-    // })
+    setToggleUpdate(true)
   }
 
   return (
@@ -118,6 +107,8 @@ const Details = () => {
           setPhone={setPhone}
           email={email}
           setEmail={setEmail}
+          toggleUpdate={toggleUpdate}
+          setToggleUpdate={setToggleUpdate}
         />
       </section>
     </>
