@@ -7,7 +7,8 @@ export default {
       lightpink: "#FFC8DD",
       pink: "#FFAFCC",
       lightblue: "#BDE0FE",
-      blue: "#A2D2FF"
+      blue: "#A2D2FF",
+      red: "red"
     },
     extend: {
       fontFamily: {

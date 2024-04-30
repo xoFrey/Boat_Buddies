@@ -103,29 +103,35 @@ const Details = () => {
   }
 
   return (
-    <main>
-      <section>
-        <div className="mb-8 flex flex-col items-start">
-          <h1 className="font-bold mb-4">Boats Details Page</h1>
-          <img src={`${backendUrl}/${boatsData.imgUrl}`} alt="" />
-          <h2>{boatsData.name}</h2>
-          <h2>SN: {boatsData.seriennummer}</h2>
-          <h2>Baujahr: {boatsData.baujahr}</h2>
-          <h2>Type: {boatsData.boatsType}</h2>
-          <h2>Material: {boatsData.material}</h2>
-          <div className="flex gap-2 items-center">
-            <Link to="/boats" className="inline">
-              <TiDeleteOutline
-                onClick={deleteBoat}
-                className="cursor-pointer text-red-500"
-                size={30}
-              />
-            </Link>
-            <FaEdit onClick={handleBoatEdit} className="cursor-pointer" size={25} />
+    <main className="min-h-screen bg-lightblue flex items-center pb-20 flex-col">
+      <section className="">
+        <div className="mb-8 flex flex-col ">
+          <img
+            className="mb-8 h-6/12 object-cover"
+            src={`${backendUrl}/${boatsData.imgUrl}`}
+            alt=""
+          />
+          <div className="flex flex-col m-auto">
+            <h1 className="font-bold text-3xl text-center mb-8">Boats Information</h1>
+            <h2 className="text-xl font-bold mb-1">{boatsData.name}</h2>
+            <p>{boatsData.boatsType}</p>
+            <p>Baujahr: {boatsData.baujahr}</p>
+            <p>Material: {boatsData.material}</p>
+            <p className="mb-2">No: {boatsData.seriennummer}</p>
+            <div className="flex gap-2 items-center ">
+              <Link to="/boats" className="inline">
+                <TiDeleteOutline
+                  onClick={deleteBoat}
+                  className="cursor-pointer text-red"
+                  size={30}
+                />
+              </Link>
+              <FaEdit onClick={handleBoatEdit} className="cursor-pointer" size={25} />
+            </div>
           </div>
         </div>
 
-        <h2 className="font-bold">Reservations</h2>
+        <h2 className="font-bold text-xl text-center mb-4 mt-20">Reservations</h2>
         {boatsData.reservations &&
           boatsData.reservations.map((item) => {
             return (
