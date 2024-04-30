@@ -15,12 +15,14 @@ const Boats = ({ setRender }) => {
     fetch(`${backendUrl}/api/v1/boats/available`)
       .then((res) => res.json())
       .then((data) => setAvailBoats(data))
+      .catch((err) => console.log(err))
   }, [])
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/reserved`)
       .then((res) => res.json())
       .then((data) => setReservedBoats(data))
+      .catch((err) => console.log(err))
   }, [])
 
   return (
