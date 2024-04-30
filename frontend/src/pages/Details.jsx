@@ -1,74 +1,102 @@
-import { useContext, useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
-import { backendUrl } from "../Api/api.js"
-import ResForm from "../components/ResForm.jsx"
-import { TiDeleteOutline } from "react-icons/ti"
-import { AllBoats } from "../Context/Context.jsx"
-import { FaEdit } from "react-icons/fa"
-import { Button } from "../components/Button.jsx"
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { backendUrl } from "../Api/api.js";
+import ResForm from "../components/ResForm.jsx";
+import { TiDeleteOutline } from "react-icons/ti";
+import { AllBoats } from "../Context/Context.jsx";
+import { FaEdit } from "react-icons/fa";
+import { Button } from "../components/Button.jsx";
 
 const Details = () => {
-  const { allBoats, setAllBoats } = useContext(AllBoats)
-  const [boatsData, setBoatsData] = useState([])
-  const { boatsId } = useParams()
-  const [newRes, setNewRes] = useState()
+  const { allBoats, setAllBoats } = useContext(AllBoats);
+  const [boatsData, setBoatsData] = useState([]);
+  const { boatsId } = useParams();
+  const [newRes, setNewRes] = useState();
 
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [username, setUsername] = useState("")
-  const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [toggleUpdate, setToggleUpdate] = useState(false)
-  const [toggleForm, setToggleForm] = useState(false)
+  const [toggleUpdate, setToggleUpdate] = useState(false);
+  const [toggleForm, setToggleForm] = useState(false);
 
-  const [name, setName] = useState("")
-  const [baujahr, setBaujahr] = useState(0)
-  const [seriennummer, setSeriennummer] = useState(0)
-  const [materialien, setMaterialien] = useState()
-  const [boottypen, setBoottypen] = useState()
-  const [showForm, setShowForm] = useState(false)
-  const [error, setError] = useState(false)
+  const [name, setName] = useState("");
+  const [baujahr, setBaujahr] = useState(0);
+  const [seriennummer, setSeriennummer] = useState(0);
+  const [materialien, setMaterialien] = useState("");
+  const [boottypen, setBoottypen] = useState("");
+  const [error, setError] = useState(false);
 
-  console.log(toggleForm)
 
   useEffect(() => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`)
       .then((res) => res.json())
       .then((data) => setBoatsData(data))
-      .catch((err) => console.log(err))
-  }, [newRes])
+      .catch((err) => console.log(err));
+  }, [newRes]);
 
   const deleteBoat = () => {
     fetch(`${backendUrl}/api/v1/boats/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setAllBoats(allBoats.filter((item) => data._id !== item._id)))
       .then(() => fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" }))
-      .catch((err) => console.log(err))
-  }
+      .catch((err) => console.log(err));
+  };
 
   const deleteReservation = () => {
     fetch(`${backendUrl}/api/v1/reservations/${boatsId}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => setNewRes(data))
-      .catch((err) => console.log(err))
-  }
+      .catch((err) => console.log(err));
+  };
 
   const handleResEdit = (boatsId) => {
-    const reservation = boatsData.reservations.filter((item) => item._id === boatsId)
+    const reservation = boatsData.reservations.filter((item) => item._id === boatsId);
+    setUsername(reservation[0].name);
+    setPhone(reservation[0].phone);
+    setEmail(reservation[0].email);
+    setStartDate(reservation[0].startDate.slice(0, 10));
+    setEndDate(reservation[0].endDate.slice(0, 10));
 
-    setUsername(reservation[0].name)
-    setPhone(reservation[0].phone)
-    setEmail(reservation[0].email)
-    setStartDate(reservation[0].startDate.slice(0, 10))
-    setEndDate(reservation[0].endDate.slice(0, 10))
+    setToggleUpdate(true);
+  };
 
-    setToggleUpdate(true)
-  }
 
   const handleBoatEdit = () => {
-    setToggleForm(!toggleForm)
-  }
+    setToggleForm(true);
+    setName(boatsData.name);
+    setSeriennummer(boatsData.seriennummer);
+    setBoottypen(boatsData.boatsType);
+    setMaterialien(boatsData.material);
+    setBaujahr(boatsData.baujahr);
+  };
+
+  const editBoat = (e) => {
+    e.preventDefault();
+    const updateBoat = {
+      name: name,
+      boatsType: boottypen,
+      baujahr: baujahr,
+      seriennummer: seriennummer,
+      material: materialien,
+      // imgUrl:,
+    };
+
+    fetch(`${backendUrl}/api/v1/boats/${boatsId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updateBoat)
+      })
+      .then((res) => res.json())
+      .then((data) => setNewRes(data))
+      .catch((err) => console.log(err));
+    setToggleForm(false);
+  };
+
+
 
   return (
     <>
@@ -77,6 +105,7 @@ const Details = () => {
           <h1 className="font-bold mb-4">Boats Details Page</h1>
           <h2>{boatsData.name}</h2>
           <h2>SN: {boatsData.seriennummer}</h2>
+          <h2>Baujahr: {boatsData.baujahr}</h2>
           <h2>Type: {boatsData.boatsType}</h2>
           <h2>Material: {boatsData.material}</h2>
           <div className="flex gap-2 items-center">
@@ -114,14 +143,14 @@ const Details = () => {
                   />
                 </div>
               </div>
-            )
+            );
           })}
       </section>
       <section>
         {toggleForm ? (
           <section className="mt-10">
-            <Button text={"Add new Boat"} functionFn={() => setShowForm(!showForm)} />
-            <form className={`flex flex-col gap-5 mb-20 mt-10 ${showForm ? "visible" : "hidden"}`}>
+
+            <form onSubmit={editBoat} className={`flex flex-col gap-5 mb-20 mt-10 `}>
               <div className="relative">
                 <label
                   htmlFor="name"
@@ -183,7 +212,7 @@ const Details = () => {
                   id="materials"
                   name="materials"
                   className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  defaultValue="GFK">
+                >
                   <option>GFK</option>
                   <option>Holz</option>
                   <option>Metall</option>
@@ -203,7 +232,7 @@ const Details = () => {
                   id="boattype"
                   name="boattype"
                   className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  defaultValue="Tretboot">
+                >
                   <option>Tretboot</option>
                   <option>Segelboot</option>
                   <option>Luftkissenboot</option>
@@ -242,7 +271,7 @@ const Details = () => {
         )}
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Details
+export default Details;
