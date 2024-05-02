@@ -7,6 +7,7 @@ import cors from "cors";
 import { connectToDatabase } from "./models/connectDb.js";
 import { Boats } from "./models/BoatsSchema.js";
 import { Reservations } from "./models/ReservationsSchema.js";
+import { BoatService, ReservationService } from "./service/index.js";
 
 config();
 
@@ -24,7 +25,7 @@ app.post("/api/v1/files/upload", upload.single("pictures"), (req, res) => {
 });
 
 app.get("/api/v1/boats", (req, res) => {
-  Boats.find()
+  BoatService.getAllBoats()
     .then((allBoats) => res.json(allBoats || {}))
     .catch((err) => {
       console.log(err);
@@ -33,7 +34,7 @@ app.get("/api/v1/boats", (req, res) => {
 });
 
 app.get("/api/v1/reservations", (req, res) => {
-  Reservations.find()
+  ReservationService.getAllReservations()
     .then((allReservations) => res.json(allReservations || {}))
     .catch((err) => {
       console.log(err);
@@ -44,9 +45,7 @@ app.get("/api/v1/reservations", (req, res) => {
 });
 
 app.get("/api/v1/boats/reserved", (req, res) => {
-  Reservations.find()
-    .then((foundRes) => foundRes.map((resBoat) => resBoat.boatsId))
-    .then((boatIDs) => Boats.find({ _id: { $in: boatIDs } }))
+  ReservationService.getAllReservedBoats()
     .then((allRes) => res.json(allRes))
     .catch((err) => {
       console.log(err);
@@ -57,9 +56,7 @@ app.get("/api/v1/boats/reserved", (req, res) => {
 });
 
 app.get("/api/v1/boats/available", (req, res) => {
-  Reservations.find()
-    .then((foundRes) => foundRes.map((resBoat) => resBoat.boatsId))
-    .then((boatIDs) => Boats.find({ _id: { $nin: boatIDs } }))
+  ReservationService.getAllAvailableBoats()
     .then((allRes) => res.json(allRes))
     .catch((err) => {
       console.log(err);
@@ -71,19 +68,14 @@ app.get("/api/v1/boats/available", (req, res) => {
 
 app.get("/api/v1/boats/:boatsId", (req, res) => {
   const boatsId = req.params.boatsId;
-  Promise.all([Boats.findById(boatsId), Reservations.find({ boatsId })])
-    .then(([foundBoats, foundRes]) =>
-      res.json(
-        foundBoats ? { ...foundBoats.toObject(), reservations: foundRes } : {},
-      ),
-    )
+  BoatService.getBoatDetail(boatsId)
+    .then((detail) => res.json(detail || {}))
     .catch((err) => {
       console.log(err);
       res.status(500).json((err, { message: "Could not get one Boat! " }));
     });
 });
 
-// ! Nur einmal posten!
 app.post("/api/v1/boats", (req, res) => {
   const newBoat = {
     name: req.body.name,
@@ -93,7 +85,7 @@ app.post("/api/v1/boats", (req, res) => {
     material: req.body.material,
     imgUrl: req.body.imgUrl,
   };
-  Boats.create(newBoat)
+  BoatService.createNewBoat(newBoat)
     .then((addedBoat) => res.json(addedBoat || {}))
     .catch((err) => {
       console.log(err);
@@ -101,7 +93,6 @@ app.post("/api/v1/boats", (req, res) => {
     });
 });
 
-// ! Nur einmal posten!
 app.post("/api/v1/reservations/:boatsId", (req, res) => {
   const newReservation = {
     name: req.body.name,
@@ -112,7 +103,7 @@ app.post("/api/v1/reservations/:boatsId", (req, res) => {
     boatsId: req.params.boatsId,
   };
 
-  Reservations.create(newReservation)
+  ReservationService.createNewReservation(newReservation)
     .then((newRes) => res.json(newRes || {}))
     .catch((err) => {
       console.log(err);
@@ -124,7 +115,7 @@ app.post("/api/v1/reservations/:boatsId", (req, res) => {
 
 app.delete("/api/v1/boats/:boatsId", (req, res) => {
   const boatsId = req.params.boatsId;
-  Boats.findByIdAndDelete(boatsId)
+  BoatService.deleteBoat(boatsId)
     .then((deleted) => res.json(deleted || {}))
     .catch((err) => {
       console.log(err);
@@ -132,9 +123,9 @@ app.delete("/api/v1/boats/:boatsId", (req, res) => {
     });
 });
 
-app.delete("/api/v1/reservations/:boatsId", (req, res) => {
-  const boatsId = req.params.boatsId;
-  Reservations.findOneAndDelete({ boatsId })
+app.delete("/api/v1/reservations/:resId", (req, res) => {
+  const resId = req.params.resId;
+  ReservationService.deleteReservation(resId)
     .then((deleted) => res.json(deleted || {}))
     .catch((err) => {
       console.log(err);
@@ -155,7 +146,7 @@ app.patch("/api/v1/boats/:boatsId", (req, res) => {
     imgUrl: req.body.imgUrl,
   };
 
-  Boats.findByIdAndUpdate(boatsId, updateInfo, { new: true })
+  BoatService.updateBoat(boatsId, updateInfo)
     .then((updated) => res.json(updated || {}))
     .catch((err) => {
       console.log(err);
@@ -174,14 +165,10 @@ app.patch("/api/v1/reservations/:boatsId/:resId", (req, res) => {
     boatsId: req.params.boatsId,
   };
 
-  Reservations.findByIdAndUpdate(resId, updateInfo, { new: true })
-    .then((updated) => res.json(updated || {}))
-    .catch((err) => {
-      console.log(err);
-      res
-        .status(500)
-        .json((err, { message: "Could not update Reservations! " }));
-    });
+  ReservationService.updateReservation(resId, updateInfo).catch((err) => {
+    console.log(err);
+    res.status(500).json((err, { message: "Could not update Reservations! " }));
+  });
 });
 
 connectToDatabase()
