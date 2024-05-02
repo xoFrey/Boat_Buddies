@@ -1,4 +1,4 @@
-import { Boats } from "../models/BoatsSchema";
+import { Boats } from "../models/BoatsSchema.js";
 
 export const createNewBoat = (boatInfo) => {
   return Boats.find({ name: boatInfo.seriennummer }).then((foundBoat) => {

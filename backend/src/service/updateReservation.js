@@ -1,4 +1,4 @@
-import { Reservations } from "../models/ReservationsSchema";
+import { Reservations } from "../models/ReservationsSchema.js";
 
 export const updateReservation = (resId, updateInfo) => {
   const editReservation = () => {

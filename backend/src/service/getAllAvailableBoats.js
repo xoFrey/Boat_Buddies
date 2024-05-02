@@ -1,5 +1,5 @@
-import { Boats } from "../models/BoatsSchema";
-import { Reservations } from "../models/ReservationsSchema";
+import { Boats } from "../models/BoatsSchema.js";
+import { Reservations } from "../models/ReservationsSchema.js";
 
 export const getAllAvailableBoats = () => {
   return Reservations.find()

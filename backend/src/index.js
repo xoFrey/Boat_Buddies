@@ -69,6 +69,11 @@ app.get("/api/v1/boats/available", (req, res) => {
 app.get("/api/v1/boats/:boatsId", (req, res) => {
   const boatsId = req.params.boatsId;
   BoatService.getBoatDetail(boatsId)
+    .then(([foundBoats, foundRes]) =>
+      res.json(
+        foundBoats ? { ...foundBoats.toObject(), reservations: foundRes } : {},
+      ),
+    )
     .then((detail) => res.json(detail || {}))
     .catch((err) => {
       console.log(err);

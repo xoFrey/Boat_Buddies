@@ -1,4 +1,4 @@
-import { Reservations } from "../models/ReservationsSchema";
+import { Reservations } from "../models/ReservationsSchema.js";
 
 export const deleteReservation = (resId) => {
   return Reservations.findOneAndDelete(resId).then((deleted) => {

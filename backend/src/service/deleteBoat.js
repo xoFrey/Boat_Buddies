@@ -1,4 +1,4 @@
-import { Boats } from "../models/BoatsSchema";
+import { Boats } from "../models/BoatsSchema.js";
 
 export const deleteBoat = (boatsId) => {
   return Boats.findByIdAndDelete(boatsId).then((deleted) => {
