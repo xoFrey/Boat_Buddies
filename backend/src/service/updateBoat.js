@@ -1,19 +1,17 @@
 import { Boats } from "../models/BoatsSchema.js";
 
-export const updateBoat = (boatsId, updateInfo) => {
-  const editBoat = () => {
-    Boats.findByIdAndUpdate(boatsId, { $set: updateInfo }, { new: true });
-  };
+export const updateBoat = async (boatsId, updateInfo) => {
   if (updateInfo.seriennummer) {
-    return Boats.findOne({ seriennummer: updateInfo.seriennummer }).then(
-      (foundBoat) => {
-        if (foundBoat) {
-          throw new Error("Cannot change to exisiting serial number!");
-        }
-        return editBoat();
-      },
+    const foundBoat = await Boats.findOne({
+      seriennummer: updateInfo.seriennummer,
+    });
+    if (foundBoat) {
+      throw new Error("Cannot change to exisiting serial number!");
+    }
+    return Boats.findByIdAndUpdate(
+      boatsId,
+      { $set: updateInfo },
+      { new: true },
     );
-  } else {
-    return editBoat();
   }
 };

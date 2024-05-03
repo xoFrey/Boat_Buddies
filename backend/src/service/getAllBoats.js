@@ -1,5 +1,6 @@
 import { Boats } from "../models/BoatsSchema.js";
 
-export const getAllBoats = () => {
-  return Boats.find({});
+export const getAllBoats = async () => {
+  const found = await Boats.find({});
+  return found;
 };
